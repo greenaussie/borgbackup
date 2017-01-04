@@ -1,0 +1,53 @@
+#!/bin/bash
+#
+# Borgbackup https://borgbackup.readthedocs.io
+#
+# Deduplicating backup with mountable volumes for recovery using fuse
+#
+# Initialisation:
+
+# root@green:~# cd /root
+# root@green:~# . .borgbackup.env
+# root@green:~# . borg-env/bin/activate
+# (borg-env) root@green:~# mkdir -p /sdb1/borgbackup/green/etc
+# (borg-env) root@green:~# mkdir -p /sdb1/borgbackup/green/home
+# (borg-env) root@green:~# mkdir -p /sdb1/borgbackup/green/usr/local
+# (borg-env) root@green:~# mkdir -p /sdb1/borgbackup/green/var
+# (borg-env) root@green:~# borg init /sdb1/borgbackup/green/etc
+# (borg-env) root@green:~# borg init /sdb1/borgbackup/green/home
+# (borg-env) root@green:~# borg init /sdb1/borgbackup/green/usr/local
+# (borg-env) root@green:~# borg init /sdb1/borgbackup/green/var
+# (borg-env) root@green:~# borg init /sdb1/borgbackup/green/root
+
+# borg init /sdb1/borgbackup
+
+# Get the password - this file should be 0600 and owned by root
+. /root/.borgbackup.env
+
+# Set up they python3 environment
+. /root/borg-env/bin/activate
+
+set -x
+
+borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/etc::green-etc-{now:%Y-%m-%d_%H:%M:%S} /etc
+borg create -C lz4 --exclude-caches --exclude 'sh:/home/*/.Private' /sdb1/borgbackup/green/home::green-home-{now:%Y-%m-%d_%H:%M:%S} /home
+borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/var::green-home-{now:%Y-%m-%d_%H:%M:%S} /var
+borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/usr/local::green-usr-local-{now:%Y-%m-%d_%H:%M:%S} /usr/local
+borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/root::green-root-{now:%Y-%m-%d_%H:%M:%S} /root
+
+borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=-1 /sdb1/borgbackup/green/etc
+borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=-1 /sdb1/borgbackup/green/home
+borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=-1 /sdb1/borgbackup/green/var
+borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=-1 /sdb1/borgbackup/green/usr/local
+borg prune --keep-daily=7 --keep-weekly=4 --keep-monthly=-1 /sdb1/borgbackup/green/etc
+
+borg list /sdb1/borgbackup/green/etc
+borg list /sdb1/borgbackup/green/home
+borg list /sdb1/borgbackup/green/var
+borg list /sdb1/borgbackup/green/usr/local
+borg list /sdb1/borgbackup/green/etc
+
+df /dev/sdb2
+
+
+set +x
