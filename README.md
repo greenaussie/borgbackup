@@ -10,3 +10,7 @@ Set up Python 3 virtual local environment to be used and invoked by root, and wh
 Modify .borg.env and paths in script to meet your needs. Copy .borg.env to /root. Copy the script to /etc/cron.daily and ensure executable. 
 
 Use the commented commands to initialize your repositories, test and use!
+
+## Off site copy?
+
+A command like ``rsync -ra source destination`` will make a copy of the repo which could be on an external destination for off-site storage.
