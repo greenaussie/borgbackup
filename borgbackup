@@ -30,7 +30,7 @@
 set -x
 
 borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/etc::green-etc-{now:%Y-%m-%d_%H:%M:%S} /etc
-borg create -C lz4 --exclude-caches --exclude 'sh:/home/*/.Private' /sdb1/borgbackup/green/home::green-home-{now:%Y-%m-%d_%H:%M:%S} /home
+borg create -C lz4 --exclude-caches --exclude 'sh:/home/.ecryptfs' --exclude 'sh:/home/*/.Private' /sdb1/borgbackup/green/home::green-home-{now:%Y-%m-%d_%H:%M:%S} /home
 borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/var::green-home-{now:%Y-%m-%d_%H:%M:%S} /var
 borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/usr/local::green-usr-local-{now:%Y-%m-%d_%H:%M:%S} /usr/local
 borg create -C lz4 --exclude-caches /sdb1/borgbackup/green/root::green-root-{now:%Y-%m-%d_%H:%M:%S} /root
